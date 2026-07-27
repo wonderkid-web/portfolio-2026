@@ -1,0 +1,16 @@
+name: wahyu-portfolio
+
+services:
+  portfolio:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: wahyu-portfolio:local
+    container_name: wahyu-portfolio
+    ports:
+      - '3013:3013'
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3013
+      ORIGIN: http://localhost:3013
+    restart: unless-stopped
