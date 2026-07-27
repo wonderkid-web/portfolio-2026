@@ -32,7 +32,7 @@ const projects: Project[] = [
 	},
 	{
 		name: 'Datek MIS',
-		link: 'https://datek.mahkotagroup.com',
+		link: 'https://datek.my.id',
 		description: 'MIS platform for managing employee data, inventory, service records, location tracking, and reports.',
 		label: 'Portal'
 	}
