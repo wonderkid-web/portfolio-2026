@@ -101,17 +101,49 @@ a {
 	color: #070809;
 }
 
+/*
+ * The bubble and its tail both read --greeting-bg, so a tone only has to set
+ * that one variable. Text is near-black rather than white: at 16px these vivid
+ * fills cannot carry white type at a legible contrast.
+ */
 .greeting {
+	--greeting-bg: var(--green);
+
 	position: absolute;
 	top: 42px;
 	right: 4px;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
 	padding: 13px 20px;
 	border-radius: 999px;
-	background: var(--green);
-	color: white;
+	background: var(--greeting-bg);
+	color: #10231a;
 	font-size: 16px;
 	font-weight: 760;
 	white-space: nowrap;
+	transition:
+		background-color 420ms ease,
+		color 420ms ease;
+}
+
+.greeting[data-tone='morning'] {
+	--greeting-bg: #ffc233;
+}
+
+.greeting[data-tone='evening'] {
+	--greeting-bg: #ff8a4c;
+}
+
+.greeting[data-tone='night'] {
+	--greeting-bg: #2f2a5e;
+
+	color: #f4f2ff;
+}
+
+.greeting-emoji {
+	font-size: 15px;
+	line-height: 1;
 }
 
 .greeting i {
@@ -120,9 +152,10 @@ a {
 	left: 17px;
 	width: 0;
 	height: 0;
-	border-top: 13px solid var(--green);
+	border-top: 13px solid var(--greeting-bg);
 	border-right: 13px solid transparent;
 	transform: rotate(-4deg);
+	transition: border-top-color 420ms ease;
 }
 
 .favorite {
@@ -473,16 +506,68 @@ a {
 	background-size: 15px 15px;
 }
 
+.work-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.carousel-nav {
+	display: flex;
+	gap: 8px;
+}
+
+.carousel-nav button {
+	display: grid;
+	width: 34px;
+	height: 34px;
+	place-items: center;
+	border: 1px solid var(--line);
+	border-radius: 50%;
+	background: rgb(255 255 255 / 91%);
+	color: #4d5860;
+	cursor: pointer;
+	font-size: 14px;
+	transition:
+		border-color 180ms ease,
+		transform 180ms ease,
+		opacity 180ms ease;
+}
+
+.carousel-nav button:hover:not(:disabled) {
+	border-color: #111;
+	transform: translateY(-2px);
+}
+
+.carousel-nav button:disabled {
+	cursor: default;
+	opacity: 0.35;
+}
+
 .project-grid {
 	display: grid;
-	grid-template-columns: repeat(3, 1fr);
+	grid-auto-columns: calc((100% - 60px) / 3);
+	grid-auto-flow: column;
 	gap: 30px;
 	margin-top: 27px;
+	overflow-x: auto;
+	padding-bottom: 6px;
+	scrollbar-width: none;
+}
+
+.project-grid::-webkit-scrollbar {
+	display: none;
+}
+
+.project-grid:focus-visible {
+	outline: 2px solid var(--green);
+	outline-offset: 6px;
 }
 
 .project-card {
 	position: relative;
-	height: 315px;
+	min-height: 340px;
 	overflow: hidden;
 	border: 1px solid #edf0f2;
 	border-radius: 17px;
@@ -544,6 +629,7 @@ a {
 
 .project-meta {
 	display: flex;
+	align-items: center;
 	justify-content: space-between;
 	color: #adb6bd;
 	font-size: 10px;
@@ -552,23 +638,108 @@ a {
 	text-transform: uppercase;
 }
 
+.internal-badge {
+	display: inline-block;
+	margin-left: 7px;
+	padding: 2px 6px;
+	border: 1px solid #d6dce1;
+	border-radius: 5px;
+	color: #97a1a9;
+	font-size: 9px;
+	font-style: normal;
+	letter-spacing: 0.06em;
+	vertical-align: 1px;
+}
+
 .project-card h2 {
-	margin: 23px 0 16px;
-	font-size: 37px;
-	letter-spacing: -0.055em;
-	line-height: 1;
+	margin: 18px 0 12px;
+	font-size: 28px;
+	letter-spacing: -0.045em;
+	line-height: 1.06;
 }
 
 .project-card p {
-	max-width: 275px;
 	margin: 0;
 	color: #7f8b95;
-	font-size: 15px;
-	line-height: 1.52;
+	font-size: 14px;
+	line-height: 1.5;
 }
 
-.project-card a,
-.project-link-placeholder {
+/*
+ * Highlighter pen: an off-square gradient sweep with soft ends, so it reads as a
+ * stroke rather than a solid label. `clone` repaints it on every wrapped line.
+ */
+.project-card mark {
+	/* The negative margin cancels the padding so the sweep overhangs without
+	   pushing neighbouring punctuation away. */
+	padding: 1px 4px;
+	margin: 0 -4px;
+	background: linear-gradient(
+		101deg,
+		rgb(5 206 63 / 0%) 0.4%,
+		rgb(5 206 63 / 22%) 2.5%,
+		rgb(5 206 63 / 22%) 96%,
+		rgb(5 206 63 / 0%) 99%
+	);
+	box-decoration-break: clone;
+	color: #16241b;
+	font-weight: 620;
+	-webkit-box-decoration-break: clone;
+}
+
+.project-stack {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin: 14px 0 18px;
+	padding: 0;
+	list-style: none;
+}
+
+.project-stack li {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 3px 8px 3px 6px;
+	border: 1px solid #e2e7eb;
+	border-radius: 999px;
+	background: rgb(255 255 255 / 78%);
+	color: #6f7c86;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: -0.005em;
+	white-space: nowrap;
+}
+
+.project-stack svg {
+	width: 12px;
+	height: 12px;
+	flex: 0 0 12px;
+}
+
+/*
+ * Stand-in for technologies with no mark in simple-icons (Microsoft brands were
+ * withdrawn from it; Elysia, NextAuth, Loki, Alloy and cAdvisor were never added).
+ * Styled to read as a deliberate lettermark rather than a missing image.
+ */
+.tech-monogram {
+	display: grid;
+	width: 13px;
+	height: 13px;
+	flex: 0 0 13px;
+	place-items: center;
+	border: 1px solid #ccd4da;
+	border-radius: 4px;
+	background: #eef2f5;
+	color: #4f5a62;
+	font-size: 8.5px;
+	font-style: normal;
+	font-weight: 800;
+	line-height: 1;
+	text-transform: uppercase;
+}
+
+.project-card a {
 	display: flex;
 	width: fit-content;
 	align-items: center;
@@ -583,12 +754,26 @@ a {
 	text-decoration: none;
 }
 
+/* Nothing to click here, so it must not borrow the link's button shape. */
 .project-link-placeholder {
-	color: #929da6;
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	margin-top: auto;
+	padding: 7px 0;
+	color: #939ea7;
+	font-size: 12px;
+	font-style: italic;
 }
 
-.project-card a span,
-.project-link-placeholder span {
+.project-link-placeholder::before {
+	width: 14px;
+	height: 1px;
+	background: #c3ccd3;
+	content: '';
+}
+
+.project-card a span {
 	display: grid;
 	width: 17px;
 	height: 17px;
@@ -601,11 +786,10 @@ a {
 
 .privacy-note {
 	display: flex;
-	align-items: center;
-	gap: 18px;
-	min-height: 92px;
+	align-items: flex-start;
+	gap: 22px;
 	margin-top: 28px;
-	padding: 20px 25px;
+	padding: 26px 28px;
 	border: 1px solid var(--line);
 	border-radius: 16px;
 	background: rgb(255 255 255 / 88%);
@@ -626,17 +810,91 @@ a {
 	letter-spacing: 0.08em;
 }
 
+.privacy-copy {
+	flex: 1 1 auto;
+	max-width: 62ch;
+}
+
 .privacy-note strong {
 	display: block;
-	margin-bottom: 4px;
-	font-size: 15px;
+	margin-bottom: 7px;
+	font-size: 17px;
+	letter-spacing: -0.02em;
 }
 
 .privacy-note p {
 	margin: 0;
-	color: #89949d;
+	color: #6f7c86;
 	font-size: 13px;
-	line-height: 1.5;
+	line-height: 1.6;
+}
+
+.privacy-note a {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	margin-top: 15px;
+	color: #101315;
+	font-size: 12px;
+	font-weight: 760;
+	text-decoration: none;
+}
+
+.privacy-note a span {
+	display: grid;
+	width: 17px;
+	height: 17px;
+	place-items: center;
+	border: 1px solid var(--line);
+	border-radius: 50%;
+	color: #6c7882;
+	font-size: 10px;
+	transition: transform 180ms ease;
+}
+
+.privacy-note a:hover {
+	text-decoration: underline;
+	text-decoration-color: var(--green);
+	text-decoration-thickness: 2px;
+	text-underline-offset: 3px;
+}
+
+.privacy-note a:hover span {
+	transform: translate(1px, -1px);
+}
+
+/* Redaction bars: the visual shorthand for "this part is withheld". */
+.privacy-redaction {
+	display: flex;
+	width: 132px;
+	flex: 0 0 132px;
+	flex-direction: column;
+	gap: 7px;
+	padding-top: 5px;
+}
+
+.privacy-redaction i {
+	height: 9px;
+	border-radius: 2px;
+	background: #dfe4e8;
+}
+
+.privacy-redaction i:nth-child(1) {
+	width: 100%;
+}
+.privacy-redaction i:nth-child(2) {
+	width: 72%;
+	background: #26313a;
+}
+.privacy-redaction i:nth-child(3) {
+	width: 88%;
+}
+.privacy-redaction i:nth-child(4) {
+	width: 54%;
+	background: #26313a;
+}
+.privacy-redaction i:nth-child(5) {
+	width: 80%;
 }
 
 .footer {
@@ -738,11 +996,11 @@ a {
 	}
 
 	.project-grid {
-		grid-template-columns: 1fr;
+		grid-auto-columns: 100%;
 	}
 
 	.project-card {
-		height: 330px;
+		min-height: 330px;
 	}
 
 	.website-preview iframe {
@@ -844,16 +1102,20 @@ a {
 	}
 
 	.project-card {
-		height: 320px;
+		min-height: 320px;
 	}
 
 	.privacy-note {
-		align-items: flex-start;
-		padding: 19px;
+		gap: 16px;
+		padding: 21px 19px;
+	}
+
+	.privacy-redaction {
+		display: none;
 	}
 
 	.project-card h2 {
-		font-size: 34px;
+		font-size: 26px;
 	}
 
 	.website-preview iframe {
